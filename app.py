@@ -15,19 +15,26 @@ game = st.session_state.game
 ai = st.session_state.ai
 tracker = st.session_state.tracker
 
-for i in range(9):
-    if st.button(game.board[i] or " ", key=i):
-        if game.make_move(i, "X"):
-            tracker.log_move(i)
-            ai.record_player_move(i)
-            log_move("X", i)
+# Create 3 rows
+for row in range(3):
+    cols = st.columns(3)
+    for col in range(3):
+        index = row * 3 + col
+        with cols[col]:
+            if st.button(game.board[index] or " ", key=index):
+                if game.make_move(index, "X"):
+                    tracker.log_move(index)
+                    ai.record_player_move(index)
+                    log_move("X", index)
 
-            if not game.current_winner:
-                ai_move = ai.choose_move(game)
-                game.make_move(ai_move, "O")
-                log_move("O", ai_move)
+                    if not game.current_winner and game.available_moves():
+                        ai_move = ai.choose_move(game)
+                        game.make_move(ai_move, "O")
+                        log_move("O", ai_move)
+
 
 st.write("Board:", game.board)
 
 if game.current_winner:
     st.success(f"Winner: {game.current_winner}")
+
